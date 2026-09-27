@@ -14,9 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    # Автоматический редирект с http://localhost:8000/ на http://localhost:8000/catalog/home/
+    # просто хочется что бы был виден красивый адрес, потом уберу
+    path("", RedirectView.as_view(url="/catalog/home/", permanent=True)),
+    path("catalog/", include("catalog.urls")),
 ]

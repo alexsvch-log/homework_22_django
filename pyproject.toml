@@ -42,6 +42,7 @@ per-file-ignores = [
 ]
 
 [tool.black]
+target-version = ['py314']
 line-length = 119
 exclude = '''
 /(
