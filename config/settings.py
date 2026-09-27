@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
-import os   # noqa: F401
+import os  # noqa: F401
 from pathlib import Path
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,14 +79,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 load_dotenv()
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',   # ИИ рекомендует вместо django.db.backends.postgresql_psycopg2,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",  # ИИ рекомендует вместо django.db.backends.postgresql_psycopg2,
         # так как он устарел, начиная с Django 2.0+
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT', default='5432'),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT", default="5432"),
     }
 }
 

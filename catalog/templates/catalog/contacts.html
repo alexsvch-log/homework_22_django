@@ -25,21 +25,30 @@
     <div class="row text-start">
         <div class="col-lg-9 col-md-6 col-sm-12">
             <div class="card mb-4 box-shadow">
-                <div class="card-body">
+                <div class="card-body">                    {% if contact %}
                     <table class="table table-striped">
                         <tr>
-                            <td class="w-25">Страна</td>
-                            <td>USA</td>
+                            <td class="w-25">Компания / ФИО</td>
+                            <td>{{ contact.name }}</td>
                         </tr>
                         <tr>
                             <td class="w-25">Телефон</td>
-                            <td>1(646)123-56-56</td>
+                            <td>{{ contact.phone }}</td>
                         </tr>
                         <tr>
-                            <td class="w-25">Адрес</td>
-                            <td>Redmond,WA,98052-6399</td>
+                            <td class="w-25">Email</td>
+                            <td>{{ contact.email }}</td>
                         </tr>
-                    </table>
+                        {% if contact.address %}
+                        <tr>
+                            <td class="w-25">Адрес</td>
+                            <td>{{ contact.address }}</td>
+                        </tr>
+                        {% endif %}
+                        </table>
+                    {% else %}
+                        <p class="text-muted text-center my-3">Контактные данные еще не заполнены в панели администратора.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
