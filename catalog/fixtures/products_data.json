@@ -1,0 +1,132 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "name": "Смартфон",
+        "description": "Флагманский телефон",
+        "image": "",
+        "category": 1,
+        "price": "79990.00",
+        "created_at": "2026-09-27T10:44:52.791Z",
+        "updated_at": "2026-09-27T10:44:52.791Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+        "name": "Наушники",
+        "description": "Беспроводные наушники",
+        "image": "",
+        "category": 1,
+        "price": "11500.00",
+        "created_at": "2026-09-27T10:45:53.213Z",
+        "updated_at": "2026-09-27T10:51:27.084Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+        "name": "Планшет",
+        "description": "Планшет с ярким экраном",
+        "image": "",
+        "category": 1,
+        "price": "45000.00",
+        "created_at": "2026-09-27T11:28:57.945Z",
+        "updated_at": "2026-09-27T11:28:57.945Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 5,
+    "fields": {
+        "name": "Умные часы",
+        "description": "Фитнес-трекер с пульсометром",
+        "image": "",
+        "category": 1,
+        "price": "8990.00",
+        "created_at": "2026-09-27T11:29:09.897Z",
+        "updated_at": "2026-09-27T11:29:09.897Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 6,
+    "fields": {
+        "name": "Чистый код",
+        "description": "Руководство от Роберта Мартина",
+        "image": "",
+        "category": 2,
+        "price": "2100.00",
+        "created_at": "2026-09-27T11:29:21.265Z",
+        "updated_at": "2026-09-27T11:29:21.265Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 7,
+    "fields": {
+        "name": "Грокаем алгоритмы",
+        "description": "Иллюстрированное пособие",
+        "image": "",
+        "category": 2,
+        "price": "1800.00",
+        "created_at": "2026-09-27T11:29:31.376Z",
+        "updated_at": "2026-09-27T11:29:31.376Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 8,
+    "fields": {
+        "name": "Кофемашина",
+        "description": "Автоматическая кофемашина",
+        "image": "",
+        "category": 3,
+        "price": "35000.00",
+        "created_at": "2026-09-27T11:32:31.744Z",
+        "updated_at": "2026-09-27T11:32:31.744Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 9,
+    "fields": {
+        "name": "Робот-пылесос",
+        "description": "Влажная и сухая уборка",
+        "image": "",
+        "category": 3,
+        "price": "22500.00",
+        "created_at": "2026-09-27T11:32:42.592Z",
+        "updated_at": "2026-09-27T11:32:42.592Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 10,
+    "fields": {
+        "name": "Худи оверсайз",
+        "description": "Теплая толстовка",
+        "image": "",
+        "category": 4,
+        "price": "3900.00",
+        "created_at": "2026-09-27T11:35:40.800Z",
+        "updated_at": "2026-09-27T11:35:40.800Z"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 11,
+    "fields": {
+        "name": "Кроссовки",
+        "description": "Спортивные кроссовки",
+        "image": "",
+        "category": 4,
+        "price": "7500.00",
+        "created_at": "2026-09-27T11:35:51.784Z",
+        "updated_at": "2026-09-27T11:35:51.784Z"
+    }
+}
+]
