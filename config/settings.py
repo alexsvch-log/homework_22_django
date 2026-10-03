@@ -141,3 +141,9 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+# URL-адрес для доступа к медиафайлам через браузер
+MEDIA_URL = '/media/'
+
+# Абсолютный путь в вашей файловой системе, куда Django будет физически сохранять картинки
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
