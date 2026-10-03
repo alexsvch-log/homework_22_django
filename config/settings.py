@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
-import os   # noqa: F401
+import os  # noqa: F401
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "catalog",
 ]
 
@@ -74,10 +77,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+load_dotenv()
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",  # ИИ рекомендует вместо django.db.backends.postgresql_psycopg2,
+        # так как он устарел, начиная с Django 2.0+
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT", default="5432"),
     }
 }
 
@@ -132,3 +141,9 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+# URL-адрес для доступа к медиафайлам через браузер
+MEDIA_URL = '/media/'
+
+# Абсолютный путь в вашей файловой системе, куда Django будет физически сохранять картинки
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
