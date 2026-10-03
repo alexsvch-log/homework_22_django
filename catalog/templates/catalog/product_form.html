@@ -1,0 +1,71 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Добавление нового товара — Online Strange Store{% endblock %}
+
+{% block content %}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Добавление товара</h1>
+    <p class="lead text-muted">Панель быстрого наполнения каталога для менеджеров магазина</p>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card box-shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="my-0 font-weight-normal">Параметры нового товара</h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <!-- Важно: enctype="multipart/form-data" обязателен для загрузки файлов/картинок! -->
+                    <form method="post" enctype="multipart/form-data" class="form-floating">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-bold">Наименование товара</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="Введите название товара" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label fw-bold">Категория</label>
+                            <select name="category" class="form-select form-control" id="category" required>
+                                <option value="" disabled selected>-- Выберите категорию из списка --</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="price" class="form-label fw-bold">Цена за покупку (руб.)</label>
+                            <input type="number" step="0.01" name="price" class="form-control" id="price" placeholder="0.00" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label fw-bold">Изображение товара</label>
+                            <input type="file" name="image" class="form-control" id="image" accept="image/*">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">Подробное описание</label>
+                            <textarea name="description" class="form-control" id="description" rows="5" placeholder="Опишите свойства и преимущества товара..." required></textarea>
+                        </div>
+
+                        <hr class="my-4">
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="{% url 'catalog:home' %}" class="btn btn-lg btn-block btn-outline-secondary">Отмена</a>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-lg btn-block btn-primary">Сохранить товар</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
