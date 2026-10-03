@@ -1,0 +1,40 @@
+{% extends 'catalog/base.html' %}
+{% load humanize %}
+
+{% block title %}{{ product.name }} — Детали{% endblock %}
+
+{% block content %}
+<div class="container my-5 bg-white p-5 rounded box-shadow">
+    <div class="row">
+        <div class="col-md-5 text-center mb-4">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 400px; object-fit: cover;">
+            {% else %}
+                <img src="{% load static %}{% static 'images/no_image.png' %}" class="img-fluid rounded" alt="Нет фото" style="max-height: 400px; object-fit: cover;">
+            {% endif %}
+        </div>
+
+        <div class="col-md-7 d-flex flex-column justify-content-between">
+            <div>
+                <span class="badge bg-primary mb-2">{{ product.category.name }}</span>
+                <h1 class="display-5 fw-bold text-dark">{{ product.name }}</h1>
+                <h2 class="text-success my-3">{{ product.price|intcomma }} руб.</h2>
+                <hr>
+                <h5>Описание:</h5>
+                <p class="lead text-muted">{{ product.description }}</p>
+                <hr>
+            </div>
+            
+            <div class="bg-light p-3 rounded text-muted mb-4" style="font-size: 0.9rem;">
+                <p class="m-1"><strong>ID товара в базе данных:</strong> {{ product.id }}</p>
+                <p class="m-1"><strong>Дата создания карточки:</strong> {{ product.created_at|date:"d.m.Y H:i" }}</p>
+                <p class="m-1"><strong>Дата последнего изменения:</strong> {{ product.updated_at|date:"d.m.Y H:i" }}</p>
+            </div>
+
+            <div>
+                <a href="{% url 'catalog:home' %}" class="btn btn-lg btn-outline-secondary w-100">Вернуться в каталог</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
