@@ -17,15 +17,16 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Оставляем только это подключение. Теперь ВСЕ страницы каталога будут начинаться с catalog/
+    # Подключение catalog/
     path("catalog/", include("catalog.urls")),
+    # Подключение blog/
+    path("blog/", include("blog.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,57 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Управление статьей — Блог{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card box-shadow border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="my-0 font-weight-bold">
+                        {% if object %} Редактирование статьи {% else %} Написание новой статьи {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form method="post" enctype="multipart/form-data" class="form-floating">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label fw-bold">Заголовок статьи</label>
+                            <input type="text" name="title" class="form-control" id="id_title" value="{{ form.title.value|default:'' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_preview" class="form-label fw-bold">Превью (изображение)</label>
+                            <input type="file" name="preview" class="form-control" id="id_preview" accept="image/*">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_content" class="form-label fw-bold">Текст статьи</label>
+                            <textarea name="content" class="form-control" id="id_content" rows="8" required>{{ form.content.value|default:'' }}</textarea>
+                        </div>
+
+                        <div class="mb-3 form-check form-switch pt-2">
+                            <input class="form-check-input" type="checkbox" name="is_published" id="id_is_published" {% if form.is_published.value %}checked{% endif %}>
+                            <label class="form-check-label fw-bold" for="id_is_published">Опубликовать сразу на сайте</label>
+                        </div>
+
+                        <hr class="my-4">
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="{% url 'blog:list' %}" class="btn btn-lg w-100 btn-outline-secondary">Отмена</a>
+                            </div>
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-lg w-100 btn-primary fw-bold">Сохранить</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
