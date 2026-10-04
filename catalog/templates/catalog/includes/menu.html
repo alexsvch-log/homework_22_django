@@ -1,0 +1,14 @@
+<div class="bg-white border-bottom box-shadow fixed-top">
+    <!-- Контейнер выровняет элементы шапки строго по сетке с карточками товаров -->
+    <div class="container d-flex flex-column flex-md-row align-items-center p-3 px-md-4">
+        <h5 class="my-0 mr-md-auto font-weight-bold text-dark" style="letter-spacing: 0.5px;">Online Strange Store</h5>
+        <nav class="ms-md-auto mt-2 mt-md-0">
+            <a class="p-2 btn btn-outline-primary me-2" href="{% url 'catalog:home' %}">Каталог</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:contacts' %}">Контакты</a>
+
+            {% if user.is_staff %}
+                <a class="p-2 btn btn-success text-white ms-3" href="{% url 'catalog:product_create' %}">+ Добавить товар</a>
+            {% endif %}
+        </nav>
+    </div>
+</div>
