@@ -90,32 +90,48 @@ def product_detail_view(request: HttpRequest, pk: int):
 def product_create_view(request):
     # Нам понадобятся все категории, чтобы менеджер мог выбрать нужную в выпадающем списке
     categories = Category.objects.all()
+    error_message = None  # Переменная для хранения текста ошибки
 
     if request.method == "POST":
-        # Извлекаем данные из полей формы
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
+        # Извлекаем данные из полей формы и сразу очищаем их от случайных крайних пробелов с помощью .strip()
+        name = request.POST.get("name", "").strip()
+        description = request.POST.get("description", "").strip()
+        price = request.POST.get("price", "").strip()
         category_id = request.POST.get("category")
         image = request.FILES.get("image")  # Картинки берутся из request.FILES!
 
-        # Находим объект категории по выбранному ID
-        category = Category.objects.get(pk=category_id)
+        # 1. ЗАЩИТА: Проверяем, что обязательные текстовые поля не пустые
+        if not name or not description or not price or not category_id:
+            error_message = "Пожалуйста, заполните все обязательные поля формы!"
 
-        # Создаем и сохраняем новый товар в базу данных PostgreSQL
-        Product.objects.create(
-            name=name,
-            description=description,
-            price=price,
-            category=category,
-            image=image
-        )
+        else:
+            try:
+                # ЗАЩИТА: Проверяем, что цена — это корректное положительное число
+                price_value = float(price)
+                if price_value <= 0:
+                    error_message = "Цена товара должна быть больше нуля!"
+                else:
+                    # ЗАЩИТА: Безопасно ищем категорию в базе
+                    category = Category.objects.get(pk=category_id)
 
-        # После успешного создания перенаправляем менеджера на главную страницу каталога
-        return redirect("catalog:home")
+                    # Если все проверки пройдены — сохраняем в PostgreSQL
+                    Product.objects.create(
+                        name=name,
+                        description=description,
+                        price=price_value,
+                        category=category,
+                        image=image
+                    )
+                    return redirect("catalog:home")
 
-    # Если метод GET, просто отдаем страницу с формой
+            except ValueError:
+                error_message = "Некорректный формат цены. Введите число (например, 1500.50)!"
+            except Category.DoesNotExist:
+                error_message = "Выбранная категория не существует в базе данных!"
+
+    # Если это GET-запрос или если сработала одна из защит (появился error_message)
     context = {
-        "categories": categories
+        "categories": categories,
+        "error": error_message  # Передаем текст ошибки в HTML
     }
     return render(request, "catalog/product_form.html", context)
