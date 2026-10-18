@@ -17,20 +17,17 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Автоматический редирект с http://localhost:8000/ на http://localhost:8000/catalog/home/
-    # просто хочется что бы был виден красивый адрес, потом уберу
-    path("", RedirectView.as_view(url="/catalog/home/", permanent=True)),
+
+    # Подключение catalog/
     path("catalog/", include("catalog.urls")),
-    path('', include('catalog.urls')), # Подключение урлов приложения
+    # Подключение blog/
+    path("blog/", include("blog.urls")),
 ]
 
-# Этот блок автоматически включает раздачу картинок, когда включен режим разработки (DEBUG = True)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

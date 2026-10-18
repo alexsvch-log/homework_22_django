@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "django.contrib.humanize",
     "catalog",
+    "blog",
 ]
 
 MIDDLEWARE = [
@@ -148,3 +149,14 @@ MEDIA_URL = '/media/'
 
 # Абсолютный путь в вашей файловой системе, куда Django будет физически сохранять картинки
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Установка Django для отправки почты в консоль
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+    },
+}
+
+# Оставляем адрес отправителя по умолчанию
+DEFAULT_FROM_EMAIL = 'noreply@strange-store.ru'

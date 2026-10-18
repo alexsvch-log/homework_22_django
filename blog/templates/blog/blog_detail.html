@@ -1,0 +1,40 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}{{ article.title }} — Блог{% endblock %}
+
+{% block content %}
+<div class="container my-5 bg-white p-5 rounded box-shadow border-0 shadow-sm">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Заголовок и мета-данные -->
+            <h1 class="display-4 fw-bold text-dark mb-3 store-hero-title text-start">{{ article.title }}</h1>
+            <p class="text-muted small mb-4">
+                📅 Опубликовано: {{ article.created_at|date:"d.m.Y H:i" }} | 👀 Просмотров: {{ article.views_count }}
+            </p>
+            <hr class="my-4">
+
+            <!-- Изображение статьи -->
+            {% if article.preview %}
+                <div class="text-center mb-4">
+                    <img src="{{ article.preview.url }}" class="img-fluid rounded shadow-sm" alt="{{ article.title }}" style="max-height: 500px; width: 100%; object-fit: cover;">
+                </div>
+            {% endif %}
+
+            <!-- Содержимое статьи -->
+            <div class="lead text-secondary my-4" style="line-height: 1.8; white-space: pre-line;">
+                {{ article.content }}
+            </div>
+            <hr class="my-4">
+
+            <!-- Кнопки управления -->
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary px-4 fw-bold">Назад к статьям</a>
+                <div>
+                    <a href="{% url 'blog:edit' article.id %}" class="btn btn-outline-primary px-4 fw-bold me-2">Редактировать</a>
+                    <a href="{% url 'blog:delete' article.id %}" class="btn btn-outline-danger px-4 fw-bold">Удалить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
