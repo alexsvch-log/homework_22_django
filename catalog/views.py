@@ -1,11 +1,13 @@
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin # Замена декоратора для классов
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, DeleteView, FormView
+from django.contrib.auth.mixins import UserPassesTestMixin  # Импортируем миксин для проверки прав админа
+from django.contrib import messages
 
-from .models import Product, Category, ContactInfo
+from .models import Product, ContactInfo
+from .forms import ProductForm, ContactForm
 
 
-# 1. Главная страница (Замена home_view)
+# 1. Главная страница  (Замена home_view)
 class ProductListView(ListView):
     model = Product
     template_name = 'catalog/home.html'
@@ -18,26 +20,31 @@ class ProductListView(ListView):
 
 
 # 2. Страница контактов (Замена contacts_view)
-class ContactsTemplateView(TemplateView):
+class ContactsFormView(FormView):
+    form_class = ContactForm
     template_name = 'catalog/contacts.html'
+    success_url = reverse_lazy('catalog:success')
 
     def get_context_data(self, **kwargs):
+        # Передаем контактные данные компании из базы, как и раньше
         context = super().get_context_data(**kwargs)
-        # Добавляем контактные данные в контекст страницы
         context['contact'] = ContactInfo.objects.first()
         return context
 
-    def post(self, request, *args, **kwargs):
-        # Обработка отправки формы обратной связи (как и было в FBV)
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        phone = request.POST.get("phone")
-        message = request.POST.get("message")
-        print(f"Новое сообщение: {name}, {email}, {phone}, {message}")
+    def form_valid(self, form):
+        # Этот метод вызывается, когда пользователь заполнил все поля без ошибок
+        name = form.cleaned_data['name']
+        email = form.cleaned_data['email']
+        phone = form.cleaned_data['phone']
+        message = form.cleaned_data['message']
 
-        request.session["name"] = name
-        from django.shortcuts import redirect
-        return redirect("catalog:success")
+        # Печатаем чистое сообщение в консоль PyCharm
+        print(f"Новое сообщение от {name} ({email}, {phone}): {message}")
+
+        # Сохраняем имя в сессию для страницы успеха
+        self.request.session["name"] = name
+
+        return super().form_valid(form)
 
 
 class SuccessTemplateView(TemplateView):
@@ -61,29 +68,46 @@ class ProductDetailView(DetailView):
 
 
 # 4. Форма создания товара (Замена product_create_view)
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class ProductCreateView(UserPassesTestMixin, CreateView):
     model = Product
+    form_class = ProductForm  # Привязываем кастомную форму с валидацией
     template_name = 'catalog/product_form.html'
-    fields = ['name', 'description', 'price', 'category', 'image'] # Поля формы
-    success_url = reverse_lazy('catalog:home') # Куда перенаправить после успеха
+    success_url = reverse_lazy('catalog:home')
 
-    # ГЛАВНОЕ УСЛОВИЕ: Этот метод проверяет, является ли пользователь админом/персоналом
+    # Этот метод теперьзапустится и проверит статус админа
     def test_func(self):
-        return self.request.user.is_staff  # Возвращает True только для админов
+        return self.request.user.is_staff
 
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Передаем категории для выпадающего списка
-        context['categories'] = Category.objects.all()
-        return context
-
+    # Метод form_valid оставляем, он сработает СРАЗУ ПОСЛЕ проверок из forms.py
     def form_valid(self, form):
-        # В CBV встроенная валидация сама проверяет поля на пустоту (required)!
-        # Добавим нашу кастомную проверку: цена должна быть больше нуля
         price = form.cleaned_data.get('price')
         if price and price <= 0:
             form.add_error('price', 'Цена товара должна быть больше нуля!')
             return self.form_invalid(form)
 
         return super().form_valid(form)
+
+# Класс редактирования товара (тоже использует ProductForm)
+class ProductUpdateView(UserPassesTestMixin, UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'catalog/product_form.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+# Класс удаления товара
+class ProductDeleteView(UserPassesTestMixin, DeleteView):
+    model = Product
+    template_name = 'catalog/product_confirm_delete.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+    # Добавляем всплывающее уведомление
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, f'Товар «{obj.name}» успешно удален из каталога.')
+        return super().delete(request, *args, **kwargs)
