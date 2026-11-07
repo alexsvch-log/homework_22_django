@@ -1,7 +1,7 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import BlogEntry
@@ -50,31 +50,29 @@ class BlogDetailView(DetailView):
 
 
 # 3. Создание статьи
-class BlogCreateView(UserPassesTestMixin, CreateView):
+class BlogCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = BlogEntry
     template_name = 'blog/blog_form.html'
     fields = ['title', 'content', 'preview', 'is_published']
     success_url = reverse_lazy('blog:list')
 
     def test_func(self):
-        return self.request.user.is_staff # Только для персонала
+        return self.request.user.is_staff
 
-
-# 4. Редактирование статьи (Перенаправление на просмотр этой же статьи)
-class BlogUpdateView(UserPassesTestMixin, UpdateView):
+# 4. Редактирование статьи
+class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = BlogEntry
     template_name = 'blog/blog_form.html'
     fields = ['title', 'content', 'preview', 'is_published']
 
     def test_func(self):
-        return self.request.user.is_staff # Только для персонала
+        return self.request.user.is_staff
 
     def get_success_url(self):
         return reverse('blog:detail', kwargs={'pk': self.object.pk})
 
-
 # 5. Удаление статьи
-class BlogDeleteView(UserPassesTestMixin, DeleteView):
+class BlogDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = BlogEntry
     template_name = 'blog/blog_confirm_delete.html'
     success_url = reverse_lazy('blog:list')
