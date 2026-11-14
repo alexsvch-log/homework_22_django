@@ -9,13 +9,13 @@ from .models import User  # Импортируем ваш класс User
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     # 1. Список пользователей в таблице админки
-    list_display = ("id", "email", "first_name", "last_name", "phone", "is_staff")
+    list_display = ("id", "email", "first_name", "last_name", "phone", "get_groups", "is_staff")
 
     # 2. Поля, по которым будет работать поиск
     search_fields = ("email", "first_name", "last_name", "phone")
 
     # 3. Фильтры справа в панели
-    list_filter = ("is_staff", "is_superuser", "is_active", "country")
+    list_filter = ("groups","is_staff", "is_superuser", "is_active", "country")
 
     # 4. Сортировка списка по умолчанию
     ordering = ("email",)
@@ -54,3 +54,11 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+    # 7. Метод для вывода названий групп в таблице
+    @admin.display(description="Группы")
+    def get_groups(self, obj):
+        groups = obj.groups.all()
+        if groups:
+            return ", ".join([group.name for group in groups])
+        return "—"
