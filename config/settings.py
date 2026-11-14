@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "catalog",
     "blog",
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -138,12 +139,6 @@ STATICFILES_DIRS = [
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
-
 # URL-адрес для доступа к медиафайлам через браузер
 MEDIA_URL = '/media/'
 
@@ -160,3 +155,15 @@ MAILERS = {
 
 # Оставляем адрес отправителя по умолчанию
 DEFAULT_FROM_EMAIL = 'noreply@strange-store.ru'
+
+# Строка переопределения модели
+AUTH_USER_MODEL = 'users.User'
+
+# Куда перенаправлять пользователя после успешного входа
+LOGIN_REDIRECT_URL = 'catalog:home'
+
+# Куда перенаправлять пользователя после выхода из системы
+LOGOUT_REDIRECT_URL = 'catalog:home'
+
+# Указываем Django правильный путь для перенаправления анонимов
+LOGIN_URL = 'users:login'

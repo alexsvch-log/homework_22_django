@@ -31,6 +31,8 @@ urlpatterns = [
     path("catalog/", include("catalog.urls")),
     # Подключение blog/
     path("blog/", include("blog.urls")),
+    # НОВАЯ СТРОКА: Подключаем авторизацию и регистрацию пользователей
+    path("users/", include("users.urls")),
 ]
 
 if settings.DEBUG:

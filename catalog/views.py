@@ -1,6 +1,7 @@
+from django.contrib.auth.mixins import LoginRequiredMixin  # Импортируем миксин авторизации
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, DeleteView, FormView
-from django.contrib.auth.mixins import UserPassesTestMixin  # Импортируем миксин для проверки прав админа
+# from django.contrib.auth.mixins import UserPassesTestMixin  # Импортируем миксин для проверки прав админа
 from django.contrib import messages
 
 from .models import Product, ContactInfo
@@ -61,22 +62,22 @@ class SuccessTemplateView(TemplateView):
 
 
 # 3. Страница товара (Замена product_detail_view)
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin,DetailView):
     model = Product
     template_name = 'catalog/product_info.html'
     context_object_name = 'product'
 
 
 # 4. Форма создания товара (Замена product_create_view)
-class ProductCreateView(UserPassesTestMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm  # Привязываем кастомную форму с валидацией
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog:home')
 
-    # Этот метод теперьзапустится и проверит статус админа
-    def test_func(self):
-        return self.request.user.is_staff
+    # # Этот метод теперьзапустится и проверит статус админа
+    # def test_func(self):
+    #     return self.request.user.is_staff
 
     # Метод form_valid оставляем, он сработает СРАЗУ ПОСЛЕ проверок из forms.py
     def form_valid(self, form):
@@ -88,7 +89,7 @@ class ProductCreateView(UserPassesTestMixin, CreateView):
         return super().form_valid(form)
 
 # Класс редактирования товара (тоже использует ProductForm)
-class ProductUpdateView(UserPassesTestMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -98,13 +99,11 @@ class ProductUpdateView(UserPassesTestMixin, UpdateView):
         return self.request.user.is_staff
 
 # Класс удаления товара
-class ProductDeleteView(UserPassesTestMixin, DeleteView):
+class ProductDeleteView(LoginRequiredMixin,DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
 
-    def test_func(self):
-        return self.request.user.is_staff
 
     # Добавляем всплывающее уведомление
     def delete(self, request, *args, **kwargs):

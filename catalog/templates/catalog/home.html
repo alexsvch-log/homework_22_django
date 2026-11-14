@@ -21,6 +21,7 @@
         {% endfor %}
     {% endif %}
 
+
     <!-- Сетка товаров -->
     <div class="row text-center">
         {% for product in products %}
@@ -50,8 +51,8 @@
                                 <!-- Кнопка подробного просмотра доступна всем -->
                                 <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-sm btn-outline-primary fw-bold">Посмотреть</a>
 
-                                <!-- КНОПКИ ДЛЯ АДМИНИСТРАТОРА (Редактирование и Удаление продукта) -->
-                                {% if user.is_staff %}
+                                <!-- КНОПКИ ДЛЯ АДМИНИСТРАТОРА (Редактирование и Удаление продукта) !-- ТЕПЕРЬ ДОСТУПНО ВСЕМ АВТОРИЗОВАННЫМ ПОЛЬЗОВАТЕЛЯМ -- -->
+                                {% if user.is_authenticated %}
                                     <div>
                                         <a href="{% url 'catalog:product_edit' product.id %}" class="btn btn-sm btn-outline-warning fw-bold me-1">Редактировать</a>
                                         <a href="{% url 'catalog:product_delete' product.id %}" class="btn btn-sm btn-outline-danger fw-bold">Удалить</a>
