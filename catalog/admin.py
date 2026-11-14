@@ -14,13 +14,16 @@ class CategoryAdmin(admin.ModelAdmin):
 # Регистрация Product с выводом id, name, price, category
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "price", "category")
+    list_display = ("id", "name", "price", "category", 'is_published')
 
-    # Настройка фильтрации продуктов по категории
-    list_filter = ("category",)
+    # Настройка фильтрации продуктов по категории и публикации
+    list_filter = ("category", 'is_published')
 
     # Настройка поиска по полям name и description
     search_fields = ("name", "description")
+
+    # Позволит ставить и снимать галочки прямо в таблице, не заходя в товар
+    list_editable = ('is_published',)
 
 
 @admin.register(ContactInfo)
