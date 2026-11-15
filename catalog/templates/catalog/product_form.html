@@ -85,6 +85,19 @@
                         </div>
                         <hr class="my-4">
 
+                            {% if form.is_published %}
+                                <div class="mb-3 form-check">
+                                    {{ form.is_published }}
+                                    <label class="form-check-label fw-bold" for="{{ form.is_published.id_for_label }}">
+                                        {{ form.is_published.label }}
+                                    </label>
+                                    {% if form.is_published.errors %}
+                                <div class="text-danger small">{{ form.is_published.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+
                         <div class="row">
                             <div class="col-6">
                                 <a href="{% url 'catalog:home' %}" class="btn btn-lg w-100 btn-outline-secondary">Отмена</a>

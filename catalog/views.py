@@ -1,8 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin  # Импортируем миксин авторизации
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, DeleteView, FormView
-# from django.contrib.auth.mixins import UserPassesTestMixin  # Импортируем миксин для проверки прав админа
+from django.contrib.auth.mixins import UserPassesTestMixin  # Импортируем миксин для проверки прав
 from django.contrib import messages
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 
 from .models import Product, ContactInfo
 from .forms import ProductForm, ContactForm
@@ -75,9 +78,10 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog:home')
 
-    # # Этот метод теперьзапустится и проверит статус админа
-    # def test_func(self):
-    #     return self.request.user.is_staff
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     # Метод form_valid оставляем, он сработает СРАЗУ ПОСЛЕ проверок из forms.py
     def form_valid(self, form):
@@ -86,27 +90,56 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
             form.add_error('price', 'Цена товара должна быть больше нуля!')
             return self.form_invalid(form)
 
+        # Автоматически привязываем текущего пользователя как владельца
+        product = form.save(commit=False)
+        product.owner = self.request.user
+        product.save()
+
         return super().form_valid(form)
 
+
 # Класс редактирования товара (тоже использует ProductForm)
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog:home')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def test_func(self):
-        return self.request.user.is_staff
+        # Получаем редактируемый товар и сверяем его владельца с текущим пользователем
+        product = self.get_object()
+        # Разрешаем редактирование создателю товара ИЛИ модератору (и админу)
+        return self.request.user == product.owner or self.request.user.has_perm('catalog.can_unpublish_product')
 
 # Класс удаления товара
-class ProductDeleteView(LoginRequiredMixin,DeleteView):
+class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
 
+    def test_func(self):
+        product = self.get_object()
+        # Разрешаем удаление автору товара ИЛИ пользователю с правом модератора
+        return self.request.user == product.owner or self.request.user.has_perm('catalog.delete_product')
 
     # Добавляем всплывающее уведомление
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
         messages.success(self.request, f'Товар «{obj.name}» успешно удален из каталога.')
         return super().delete(request, *args, **kwargs)
+
+
+class UnpublishProductView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'catalog.can_unpublish_product'
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.is_published = False
+        product.save()
+        messages.success(request, f'Публикация товара «{product.name}» отменена.')
+        return redirect('catalog:home')

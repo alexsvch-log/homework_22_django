@@ -15,9 +15,10 @@
 
             <!-- Изображение статьи -->
             {% if article.preview %}
-                <div class="text-center mb-4">
-                    <img src="{{ article.preview.url }}" class="img-fluid rounded shadow-sm" alt="{{ article.title }}" style="max-height: 500px; width: 100%; object-fit: cover;">
-                </div>
+            <div class="text-center mb-4">
+                <img src="{{ article.preview.url }}" class="img-fluid rounded shadow-sm" alt="{{ article.title }}"
+                     style="max-height: 500px; width: 100%; object-fit: cover;">
+            </div>
             {% endif %}
 
             <!-- Содержимое статьи -->
@@ -29,10 +30,17 @@
             <!-- Кнопки управления -->
             <div class="d-flex justify-content-between">
                 <a href="{% url 'blog:list' %}" class="btn btn-outline-secondary px-4 fw-bold">Назад к статьям</a>
+
+                {% if perms.blog.change_blogentry or perms.blog.delete_blogentry %}
                 <div>
+                    {% if perms.blog.change_blogentry %}
                     <a href="{% url 'blog:edit' article.id %}" class="btn btn-outline-primary px-4 fw-bold me-2">Редактировать</a>
+                    {% endif %}
+                    {% if perms.blog.delete_blogentry %}
                     <a href="{% url 'blog:delete' article.id %}" class="btn btn-outline-danger px-4 fw-bold">Удалить</a>
+                    {% endif %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

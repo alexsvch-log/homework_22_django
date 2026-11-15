@@ -1,4 +1,5 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+# from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib import messages
@@ -14,11 +15,11 @@ class BlogListView(ListView):
     context_object_name = 'articles'
 
     def get_queryset(self):
-        # Если зашел администратор / персонал — показываем вообще всё
-        if self.request.user.is_staff:
+        # Если зашел администратор или контент-менеджер — показываем все статьи (включая черновики)
+        if self.request.user.has_perm('blog.change_blogentry'):
             return BlogEntry.objects.all().order_by('-created_at')
 
-        # Если зашел обычный гость — показываем только опубликованные статьи
+        # Для обычных пользователей и гостей — только опубликованные
         return BlogEntry.objects.filter(is_published=True).order_by('-created_at')
 
 
@@ -50,35 +51,38 @@ class BlogDetailView(DetailView):
 
 
 # 3. Создание статьи
-class BlogCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class BlogCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = BlogEntry
     template_name = 'blog/blog_form.html'
     fields = ['title', 'content', 'preview', 'is_published']
     success_url = reverse_lazy('blog:list')
+    permission_required = 'blog.add_blogentry'
 
-    def test_func(self):
-        return self.request.user.is_staff
+    # def test_func(self):
+    #     return self.request.user.is_staff
 
 # 4. Редактирование статьи
-class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class BlogUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = BlogEntry
     template_name = 'blog/blog_form.html'
     fields = ['title', 'content', 'preview', 'is_published']
+    permission_required = 'blog.change_blogentry'
 
-    def test_func(self):
-        return self.request.user.is_staff
+    # def test_func(self):
+    #     return self.request.user.is_staff
 
     def get_success_url(self):
         return reverse('blog:detail', kwargs={'pk': self.object.pk})
 
 # 5. Удаление статьи
-class BlogDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class BlogDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = BlogEntry
     template_name = 'blog/blog_confirm_delete.html'
     success_url = reverse_lazy('blog:list')
+    permission_required = 'blog.delete_blogentry'
 
-    def test_func(self):
-        return self.request.user.is_staff # Только для персонала
+    # def test_func(self):
+    #     return self.request.user.is_staff # Только для персонала
 
     # Метод удаления, использующий зелёное всплывающее сообщение об успешном удалении
     def delete(self, request, *args, **kwargs):

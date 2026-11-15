@@ -12,7 +12,7 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         # Указываем поля, которые будут отображаться в форме на сайте
-        fields = ['name', 'description', 'price', 'category', 'image']
+        fields = ['name', 'description', 'price', 'category', 'image', 'is_published']
 
         # ДОБАВЛЯЕМ ПЕРЕВОД ОШИБОК:
         error_messages = {
@@ -23,7 +23,14 @@ class ProductForm(forms.ModelForm):
 
     # ЗАДАНИЕ 3: Стилизация всех полей под дизайн Bootstrap через метод __init__
     def __init__(self, *args, **kwargs):
+        # Извлекаем переданного пользователя из аргументов (если его нет — берем None)
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
+        # Проверяем: если пользователя нет или у него НЕТ права модерации
+        if not user or not user.has_perm('catalog.can_unpublish_product'):
+            # Полностью удаляем поле публикации из формы
+            self.fields.pop('is_published', None)
 
         # Проходим циклом по всем полям нашей формы
         for field_name, field in self.fields.items():
