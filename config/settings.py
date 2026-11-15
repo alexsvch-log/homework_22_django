@@ -174,6 +174,11 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # Если Redis/Docker выключен, Django не упадет, а просто пойдет в базу данных
+            "IGNORE_EXCEPTIONS": True,
+            # Ждем ответа от Redis максимум 0.1 секунды (100 мс), если он выключен
+            "SOCKET_CONNECT_TIMEOUT": 0.1,
+            "SOCKET_TIMEOUT": 0.1,
         }
     }
 }

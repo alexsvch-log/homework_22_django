@@ -4,7 +4,7 @@ from .models import Product
 
 def get_products_by_category(category_id):
     # Формируем уникальный ключ кэша для конкретной категории
-    cache_key = f'products_category_{category_id}'
+    cache_key = f'category_{category_id}'
 
     # Пытаемся достать список товаров из Redis
     products = cache.get(cache_key)
