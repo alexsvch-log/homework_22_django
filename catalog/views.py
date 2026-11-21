@@ -9,6 +9,8 @@ from django.views import View
 
 from .models import Product, ContactInfo
 from .forms import ProductForm, ContactForm
+from .models import Category
+from .services import get_products_by_category, get_products_from_cache
 
 
 # 1. Главная страница  (Замена home_view)
@@ -143,3 +145,25 @@ class UnpublishProductView(LoginRequiredMixin, PermissionRequiredMixin, View):
         product.save()
         messages.success(request, f'Публикация товара «{product.name}» отменена.')
         return redirect('catalog:home')
+
+class CategoryProductsView(ListView):
+    template_name = 'catalog/category_products.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        # Вызываем сервисную функцию вместо прямого запроса в БД
+        return get_products_by_category(self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.get(pk=self.kwargs.get('pk'))
+        return context
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'catalog/home.html'
+    context_object_name = 'products'
+    paginate_by = 8  # (оставьте ваше значение пагинации, если оно есть)
+
+    def get_queryset(self):
+        return get_products_from_cache()
